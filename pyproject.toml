@@ -1,0 +1,11 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lichen"
+version = "1.0.1"
+dependencies = [
+  "numpy",
+  "torch",
+]
