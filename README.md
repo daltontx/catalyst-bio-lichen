@@ -78,13 +78,61 @@ When multiple provided a random chosen selected seed will be used.
 **filtering**: Filtering methods to apply. Provided in a list (e.g. ['ANARCII'])  
 
 ```
-lichen_model.light_generation('EVQLLESGGEVKKPGASVKVSCRASGYTFRNYGLTWVRQAPGQGLEWMGWISAYNGNTNYAQKFQGRVTLTTDTSTSTAYMELRSLRSDDTAVYFCARDVPGHGAAFMDVWGTGTTVTVSS', germline_seed=['IGKV1'])
+lichen_model.light_generation('EVQLLESGGEVKKPGASVKVSCRASGYTFRNYGLTWVRQAPGQGLEWMGWISAYNGNTNYAQKFQGRVTLTTDTSTSTAYMELRSLRSDDTAVYFCARDVPGHGAAFMDVWGTGTTVTVSS', germline_seed=['IGKV1'], n=2)
 ```
 
 ### Generating light sequences for multiple heavy sequences
+Light sequences can be generated for multiple heavy sequences using the **light_generation_bulk** function and providing the input data in a pandas dataframe. 
+This dataframe should contain a column **"heavy"** containing the heavy sequences. 
+Optional additional information can be passed in the columns **"germline_seed"**, **"custom_seed"**, **"cdrs"**, and **"filtering"** in the same format as indicated above. 
+
+The function takse the remaining parameters as input, i.e.:  
+**input**: the pandas dataframe.  
+**numbering_scheme**: Numbering scheme CDR definition used when CDRs provided. Either 'IMGT' or 'Kabat'.  
+**n** : Number of light sequences requested per heavy sequence.  
+
+```
+import pandas as pd
+df_input = pd.DataFrame({'heavy': ['EVQLLESGGEVKKPGASVKVSCRASGYTFRNYGLTWVRQAPGQGLEWMGWISAYNGNTNYAQKFQGRVTLTTDTSTSTAYMELRSLRSDDTAVYFCARDVPGHGAAFMDVWGTGTTVTVSS','QVQLVQSGVEVKKPGASVKVSCKASGYTFTNYYMYWVRQAPGQGLEWMGGINPSNGGTNFNEKFKNRVTLTTDSSTTTAYMELKSLQFDDTAVYYCARRDYRFDMGFDYWGQGTTVTVSS'],
+                         'germline_seed': [['IGLV1-36'], ['IGKV1-39']]
+                         'filtering': [['ANARCII'], ['ANARCII']]})
+result = lichen_model.light_generation_bulk(df_input, n=3)
+```
 
 ### Generating a common light sequence for a bispecific antibody
+Both functions **light_generation** and **light_generation_bulk** can take two heavy sequences at the same time to generate a common light sequences by providing the heavy sequences in a list.
+
+```
+lichen_model.light_generation(['QVQLVESGGGLVKPGGSLRLSCAASGFTFSNYYMSWVRQAPGKGLEWISYISGRGSTIFYADSVKGRITISRDNAKNSLFLQMNSLRAEDTAVYFCVKDRGGYSPYWGQGTLVTVSS', 'EVQLVESGGGLVQPGRSLRLSCAASGFTFDDYSMHWVRQAPGKGLEWVSGISWNSGSKGYADSVKGRFTISRDNAKNSLYLQMNSLRAEDTALYYCAKYGSGYGKFYHYGLDVWGQGTTVTVSS'])
+```
 
 ### Extracting log likelihood scores for an antibody
+The log likelihood score of a given heavy-light pairing can be extracted from the model using the **light_log_likelihood** function. 
+This function takes a pandas dataframe as input with the heavy sequence in the **"heavy"** column and the light sequence in the **"light"** column.
+
+```
+import pandas as pd
+df_input = pd.DataFrame({'heavy': df_input = pd.DataFrame({'heavy': ['EVQLLESGGEVKKPGASVKVSCRASGYTFRNYGLTWVRQAPGQGLEWMGWISAYNGNTNYAQKFQGRVTLTTDTSTSTAYMELRSLRSDDTAVYFCARDVPGHGAAFMDVWGTGTTVTVSS'], 'light': ['DIQMTQSPSTLSASIGDRVTITCRASEDVRKSLAWYQHRPGKAPRVLISAVSRLKDEVPSRFRGTRSEAEYTLSITSLQPDDSGTYFCQHYHRNSTTFGGGTRVDMK']})
+result = lichen_model.light_log_likelihood(df_input)
+```
 
 ### Extracting perplexity scores for an antiboy
+The perplexity score of a given heavy-light pairing can be extracted from the model using the **light_perplexity** function. 
+This function takes a pandas dataframe as input with the heavy sequence in the **"heavy"** column and the light sequence in the **"light"** column.
+
+```
+df_input = pd.DataFrame({'heavy': ['EVQLLESGGEVKKPGASVKVSCRASGYTFRNYGLTWVRQAPGQGLEWMGWISAYNGNTNYAQKFQGRVTLTTDTSTSTAYMELRSLRSDDTAVYFCARDVPGHGAAFMDVWGTGTTVTVSS'], 'light': ['DIQMTQSPSTLSASIGDRVTITCRASEDVRKSLAWYQHRPGKAPRVLISAVSRLKDEVPSRFRGTRSEAEYTLSITSLQPDDSGTYFCQHYHRNSTTFGGGTRVDMK']})
+result = lichen_model.light_perplexity(df_input)
+```
+
+## Citation
+
+```
+@article{Capel2025,
+  title = {},
+  author = {},
+  journal = {bioRxiv},
+  year = {2025},
+  doi = {}
+}
+```
