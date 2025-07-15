@@ -44,6 +44,8 @@ python setup.py install
 
 **ANARCII**, **Humatch** (and **ANARCI**), and **AbLang** are optional packages only required when you want to perform automatic filtering.
 
+Note that with the above environment LICHEN only works on a **CPU**.
+
 The **model weights** can be downloaded from ..
 
 <!--- Example usage within python --->
