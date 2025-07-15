@@ -1,0 +1,7 @@
+# Dependencies
+ANARCI/
+Humatch/
+
+# model weights
+model/*
+!model/.gitkeep 
