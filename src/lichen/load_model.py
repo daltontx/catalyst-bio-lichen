@@ -11,9 +11,7 @@ from .inference import Heavy2Light
 def load_model(path_to_model, device):
     # get the vocab size based on the tokenizer
     current_dir = os.getcwd()
-    print(current_dir)
     VOCAB = os.path.join(current_dir, "src", "lichen", "vocab.json")
-    print(VOCAB)
     SRC_VOCAB_SIZE = len(ABtokenizer(VOCAB).vocab_to_aa)
     TGT_VOCAB_SIZE = len(ABtokenizer(VOCAB).vocab_to_aa)
 
@@ -27,4 +25,4 @@ def load_model(path_to_model, device):
 
 def load_weights(model, device, model_path):
     """Load weights of model """
-    model.load_state_dict(torch.load(model_path, map_location=device))
+    model.load_state_dict(torch.load(model_path, map_location=device, weights_only=True))
