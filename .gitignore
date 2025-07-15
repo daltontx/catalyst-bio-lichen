@@ -1,3 +1,6 @@
+# Byte-compiled
+src/lichen/__pycache__/
+
 # Dependencies
 ANARCI/
 Humatch/
