@@ -157,8 +157,7 @@ class Heavy2Light:
                 probs = []
                 for memory in memory_:
                     memory = memory.to(self.device)
-                    tgt_mask = (self.generate_square_subsequent_mask(ys.size(0)).type(torch.bool)).to(self.device)
-                    # tgt_padding_mask = create_mask_inference(ys, self.tokenizer.pad_token)
+                    tgt_mask = (self._generate_square_subsequent_mask(ys.size(0)).type(torch.bool)).to(self.device)
 
                     # Get probabilities of tokens and sample next word
                     out = self.model.decode(ys, memory, tgt_mask)
@@ -191,8 +190,7 @@ class Heavy2Light:
                             if i == cdr1_grafted + 1:
                                 # Need to sample the second residue between CDR1 and conserved W
                                 memory = memory.to(self.device)
-                                tgt_mask = (self.generate_square_subsequent_mask(ys.size(0)).type(torch.bool)).to(self.device)
-                                # tgt_padding_mask = create_mask_inference(ys, self.tokenizer.pad_token)
+                                tgt_mask = (self._generate_square_subsequent_mask(ys.size(0)).type(torch.bool)).to(self.device)
                                 out = self.model.decode(ys, memory, tgt_mask)
                                 out = out.transpose(0, 1)
                                 prob = self.model.generator(out[:, -1])
@@ -302,7 +300,7 @@ class Heavy2Light:
         sampled_token = torch.multinomial(torch.nn.functional.softmax(sorted_logits / self.temperature, dim=-1), 1)
         return sampled_token
     
-    def generate_square_subsequent_mask(self, sz):
+    def _generate_square_subsequent_mask(self, sz):
         mask = (torch.triu(torch.ones((sz, sz), device=self.device)) == 1).transpose(0, 1)
         mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
         return mask
@@ -380,8 +378,7 @@ class Heavy2Light:
         i=0
         while i < tgt.shape[0]+1:
             memory = memory.to(self.device)
-            tgt_mask = (self.generate_square_subsequent_mask(ys.size(0)).type(torch.bool)).to(self.device)
-            # tgt_padding_mask = self.create_mask_inference(ys, self.tokenizer.pad_token)
+            tgt_mask = (self._generate_square_subsequent_mask(ys.size(0)).type(torch.bool)).to(self.device)
                 
             # Get probabilities next token
             out = self.model.decode(ys, memory, tgt_mask)
@@ -392,7 +389,6 @@ class Heavy2Light:
             if token_index != end_symbol: # don't include start and end symbol
                 probabilities = F.softmax(prob, dim=-1) # convert logits to probabilities
                 token_prob = probabilities[:,token_index] # get probability of specific next token
-                # total_prob *= token_prob.item()
                 token_log_prob = torch.log(token_prob.detach() + 1e-20) # add small value to prevent log of zero
                 total_log_prob += token_log_prob
             next_word = token_index.item()
