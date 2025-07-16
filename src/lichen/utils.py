@@ -192,6 +192,8 @@ def passing_anarcii_filtering(generated_light_sequence, light_cdr, light_cdr_sch
 
     try:
         from anarcii import Anarcii
+        import io
+        import sys
     except ImportError as e:
         raise ImportError(
             """
@@ -199,8 +201,12 @@ def passing_anarcii_filtering(generated_light_sequence, light_cdr, light_cdr_sch
             Please install it using the instructions in the README.
             """
         ) from e
-    
+    # Run ANARCII while silencing its output
+    text_trap = io.StringIO()
+    sys.stdout = text_trap
     model = Anarcii(seq_type="antibody", batch_size=1, cpu=True, ncpu=1, mode="accuracy", verbose=False)
+    sys.stdout = sys.__stdout__
+
     sequence = [('generated_light', generated_light_sequence)]
     results =  model.number(sequence)
     legacy_format = model.to_legacy()
@@ -296,6 +302,7 @@ def AbLang2_confidence(list_lights, n):
 
     try:
         import ablang2
+        import warnings
     except ImportError as e:
         raise ImportError(
             """
@@ -303,6 +310,9 @@ def AbLang2_confidence(list_lights, n):
             Please install it using the instructions in the README.
             """
         ) from e
+    
+    # Ignore UserWarning    
+    warnings.filterwarnings("ignore", category=FutureWarning)
 
     list_sequences = [['', x] for x in list_lights]
     ablang = ablang2.pretrained()
@@ -325,6 +335,7 @@ def diversity_AbLang2(list_lights, n):
 
     try:
         import ablang2
+        import warnings
     except ImportError as e:
         raise ImportError(
             """
@@ -332,6 +343,9 @@ def diversity_AbLang2(list_lights, n):
             Please install it using the instructions in the README.
             """
         ) from e
+    
+    # Ignore UserWarning    
+    warnings.filterwarnings("ignore", category=FutureWarning)
 
     list_sequences = [['', x] for x in list_lights]
     ablang = ablang2.pretrained()

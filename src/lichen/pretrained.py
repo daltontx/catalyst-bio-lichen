@@ -3,7 +3,6 @@ import torch
 import random
 import pandas as pd
 import math
-import time
 
 from .load_model import load_model, configure_cpus
 from .utils import passing_anarcii_filtering, passing_humatch, AbLang2_confidence, diversity_AbLang2, MAP_TYPE_SEED, MAP_GENE_FAM_SEED, MAP_GENE_SEED
@@ -221,10 +220,3 @@ class LICHEN():
         
         return input
 
-
-
-
-
-
-
-            
