@@ -117,9 +117,9 @@ class LICHEN():
             print(f'Only {len(light_sequences)} sequences could be generated that pass all requested filtering')
             return light_sequences
         elif filtering and 'diversity' in filtering:
-            return diversity_AbLang2(light_sequences, n) 
+            return diversity_AbLang2(light_sequences, n, ncpu=self.ncpu, device=self.used_device) 
         elif filtering and 'AbLang2' in filtering:
-            return AbLang2_confidence(light_sequences, n) 
+            return AbLang2_confidence(light_sequences, n, ncpu=self.ncpu, device=self.used_device) 
         else:
             return random.sample(light_sequences, k=n)
                 

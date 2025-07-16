@@ -297,7 +297,7 @@ def passing_humatch(generated_light_sequence):
     else:
         return False
     
-def AbLang2_confidence(list_lights, n):
+def AbLang2_confidence(list_lights, n, ncpu, device):
     """Calculates the confidence (log likelihood) of the light sequences
     according to AbLang2.
     """
@@ -317,7 +317,7 @@ def AbLang2_confidence(list_lights, n):
     warnings.filterwarnings("ignore", category=FutureWarning)
 
     list_sequences = [['', x] for x in list_lights]
-    ablang = ablang2.pretrained()
+    ablang = ablang2.pretrained(ncpu=ncpu, device=device)
     
     # Calculate the confidence
     results = ablang(list_sequences, mode='confidence')
@@ -329,7 +329,7 @@ def AbLang2_confidence(list_lights, n):
 
     return df['light_sequence'].to_list()
 
-def diversity_AbLang2(list_lights, n):
+def diversity_AbLang2(list_lights, n, ncpu, device):
     """Calculates the confidence (log likelihood) of the light sequences
     according to AbLang2 and select most diverse light sequences based
     on these scores.
@@ -350,7 +350,7 @@ def diversity_AbLang2(list_lights, n):
     warnings.filterwarnings("ignore", category=FutureWarning)
 
     list_sequences = [['', x] for x in list_lights]
-    ablang = ablang2.pretrained()
+    ablang = ablang2.pretrained(ncpu=ncpu, device=device)
     
     # Calculate the confidence
     results = ablang(list_sequences, mode='confidence')
