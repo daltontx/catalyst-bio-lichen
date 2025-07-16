@@ -2,6 +2,7 @@
 import torch
 import os
 import psutil
+import warnings
 
 from .parameters import EMB_SIZE, NHEAD, FFN_HID_DIM, NUM_ENCODER_LAYERS, NUM_DECODER_LAYERS, MAX_POS_LEN, TOP_P, TEMPERATURE
 from .model import Seq2SeqTransformer
@@ -15,6 +16,9 @@ def load_model(path_to_model, device):
     VOCAB = os.path.join(current_dir, "src", "lichen", "vocab.json")
     SRC_VOCAB_SIZE = len(ABtokenizer(VOCAB).vocab_to_aa)
     TGT_VOCAB_SIZE = len(ABtokenizer(VOCAB).vocab_to_aa)
+
+    # Ignore UserWarning    
+    warnings.filterwarnings("ignore", category=UserWarning)
 
     # Initialise the model
     seq2seqtransformer = Seq2SeqTransformer(NUM_ENCODER_LAYERS, NUM_DECODER_LAYERS, EMB_SIZE, NHEAD, SRC_VOCAB_SIZE, TGT_VOCAB_SIZE, FFN_HID_DIM, max_pos_len=MAX_POS_LEN)
