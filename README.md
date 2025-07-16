@@ -8,29 +8,39 @@
 Follow the steps below to download the code and the necessary packages.
 
 ```
-# clone the repo
+# Clone the repo
 git clone https://github.com:HenrietteCapel/LICHEN.git
 cd LICHEN/
 
-# create your virtual env e.g.
-conda create -n LICHEN_env python=3.12
+# Create your virtual env e.g.
+conda create -n LICHEN_env
 
-# install LICHEN
-pip install .
-
-# install required packages
+# Install required packages
+conda install anaconda::pip
 conda install -c conda-forge biopython -y
-conda install pytorch cpuonly -c pytorch
+conda install conda-forge::pytorch
 
-# install optional packages
-## ANARCII
+# ANARCII
 conda install conda-forge::anarcii
 
-## AbLang2
+# AbLang2
 pip install ablang2
 
-## Humatch
-cd LICHEN
+# LICHEN
+pip install .
+
+```
+
+**Humatch** - and therefore **ANARCI** - are optional packages only required when you want to perform automatic filtering on humanness.
+If you would like to use Humatch it is recommended to install the cpuonly version of pytorch. Note that this means when filtering by Humatch LICHEN can only be run on a CPU.
+
+```
+## Optional packages
+# Install cpuonly version of pytorch
+conda install pytorch cpuonly -c pytorch
+
+# Humatch
+cd LICHEN #Humatch and ANARCI need to be installed within the LICHEN folder
 git clone https://github.com/oxpig/Humatch.git
 cd Humatch/
 pip install .
@@ -39,12 +49,7 @@ cd ..
 git clone https://github.com/oxpig/ANARCI.git
 cd ANARCI
 python setup.py install
-
 ```
-
-**Humatch** - and therefore **ANARCI** - are optional packages only required when you want to perform automatic filtering on humanness.
-
-Note that with the above environment LICHEN only works on a **CPU**.
 
 The **model weights** can be downloaded from ..
 
@@ -53,7 +58,7 @@ The **model weights** can be downloaded from ..
 LICHEN generates light sequences for a given heavy sequence. Additional information regarding perferred light sequence type (e.g. kappa), V-gene family (e.g. IGKV1), and V-gene (e.g. IGKV1-39) usage can be provided to the model as well as light sequence seed of any length. 
 Moreover, preffered usage of CDR sequences can be provided in any combination (e.g. only CDRL3) according to both IMGT and Kabat numbering scheme definitions. 
 
-Generated light sequence can be automatically filtered on duplicates ("redundancy"), sequences which can be numbered by <a href="https://doi.org/10.1101/2025.04.16.648720">ANARCII</a>, sequences which are human according to <a href="https://doi.org/10.1080/19420862.2024.2434121">Humatch</a>, and the most likely sequences according to <a href="https://doi.org/10.1093/bioinformatics/btae618">AbLang2</a>. Moreover, the most diverse ("diversity") sequences can be selected. The later requires AbLang2 installation. 
+Generated light sequence can be automatically filtered on duplicates ("redundancy"), sequences which can be numbered by <a href="https://doi.org/10.1101/2025.04.16.648720">ANARCII</a>, sequences which are human according to <a href="https://doi.org/10.1080/19420862.2024.2434121">Humatch</a>, and the most likely sequences according to <a href="https://doi.org/10.1093/bioinformatics/btae618">AbLang2</a>. Moreover, the most diverse ("diversity") sequences can be selected (based on AbLang2 scores).
 
 LICHEN also allows for two heavy sequences as input, to generate a common light sequence.
 
