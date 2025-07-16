@@ -175,7 +175,7 @@ MAP_GENE_SEED = {'IGLV1-36': ['QSVLTQPPSV'], 'IGLV1-40': ['QSVLTQPPSV', 'QSVVTQP
                      'IGKV3D-20': ['EIVLTQSPAT', 'EIVLTQSPAT'], 'IGKV3D-7': ['EIVMTQSPAT'], 'IGKV4-1': ['DIVMTQSPDS', 'DIVMTQSPDS', 'DIVMTQSPDS'], 'IGKV5-2': ['ETTLTQSPAF', 'ETTLTQSPAF'], 
                      'IGKV6-21': ['EIVLTQSPDF', 'EIVLTQSPDF'], 'IGKV6D-21': ['EIVLTQSPDF', 'EIVLTQSPDF'], 'IGKV6D-41': ['DVVMTQSPAF'], 'IGKV7-3': ['DIVLTQSPAS']}
     
-def passing_anarcii_filtering(generated_light_sequence, light_cdr, light_cdr_scheme):
+def passing_anarcii_filtering(generated_light_sequence, light_cdr, light_cdr_scheme, ncpu=1):
     """Run ANARCII and determine if the sequence can be numbered and is recognised
     as a light chain. If CDRs are provided correctness of grafting into the 
     generated sequence is checked.
@@ -188,6 +188,8 @@ def passing_anarcii_filtering(generated_light_sequence, light_cdr, light_cdr_sch
         Containing the CDRs.
     light_cdr_scheme : 'IMGT' or 'Kabat'
         The numbering scheme definition of the CDRs.
+    ncpu :
+        Number of CPUs to use.
     """
 
     try:
@@ -204,7 +206,7 @@ def passing_anarcii_filtering(generated_light_sequence, light_cdr, light_cdr_sch
     # Run ANARCII while silencing its output
     text_trap = io.StringIO()
     sys.stdout = text_trap
-    model = Anarcii(seq_type="antibody", batch_size=1, cpu=True, ncpu=1, mode="accuracy", verbose=False)
+    model = Anarcii(seq_type="antibody", batch_size=1, cpu=True, ncpu=ncpu, mode="accuracy", verbose=False)
     sys.stdout = sys.__stdout__
 
     sequence = [('generated_light', generated_light_sequence)]

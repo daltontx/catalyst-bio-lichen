@@ -102,7 +102,7 @@ class LICHEN():
             gen_light = self.LICHEN.generate_light(input, light_seed, light_cdr, numbering_scheme)
 
             if filtering and 'ANARCII' in filtering:
-                if not passing_anarcii_filtering(gen_light, light_cdr, numbering_scheme):
+                if not passing_anarcii_filtering(gen_light, light_cdr, numbering_scheme, ncpu=self.ncpu):
                     continue 
             if filtering and 'Humatch' in filtering:
                 if not passing_humatch(gen_light):
