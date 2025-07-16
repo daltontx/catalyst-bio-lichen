@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-import os
 
 MAP_FR1_FR3 = {'NI': ['SL'],
                'AI': ['SL']*7+['TL']*6,
@@ -175,7 +174,7 @@ MAP_GENE_SEED = {'IGLV1-36': ['QSVLTQPPSV'], 'IGLV1-40': ['QSVLTQPPSV', 'QSVVTQP
                      'IGKV3/OR2-268': ['EIVMTQSPAT', 'EIVMTQSPAT'], 'IGKV3D-11': ['EIVLTQSPAT', 'EIVLTQSPAT', 'EIVLTQSPAT'], 'IGKV3D-15': ['EIVMTQSPAT', 'EIVMMQSPAT', 'EIVMTQSPAT'], 
                      'IGKV3D-20': ['EIVLTQSPAT', 'EIVLTQSPAT'], 'IGKV3D-7': ['EIVMTQSPAT'], 'IGKV4-1': ['DIVMTQSPDS', 'DIVMTQSPDS', 'DIVMTQSPDS'], 'IGKV5-2': ['ETTLTQSPAF', 'ETTLTQSPAF'], 
                      'IGKV6-21': ['EIVLTQSPDF', 'EIVLTQSPDF'], 'IGKV6D-21': ['EIVLTQSPDF', 'EIVLTQSPDF'], 'IGKV6D-41': ['DVVMTQSPAF'], 'IGKV7-3': ['DIVLTQSPAS']}
-
+    
 def passing_anarcii_filtering(generated_light_sequence, light_cdr, light_cdr_scheme):
     """Run ANARCII and determine if the sequence can be numbered and is recognised
     as a light chain. If CDRs are provided correctness of grafting into the 
