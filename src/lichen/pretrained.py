@@ -5,24 +5,7 @@ import pandas as pd
 import math
 
 from .load_model import load_model
-
-# import torch.nn as nn
-# import pandas as pd
-# import argparse
-# import time
-# import sys
-# import pickle
-# import ast
-# import os
-# import random
-
-# from const import EMB_SIZE, NHEAD, FFN_HID_DIM, NUM_ENCODER_LAYERS, NUM_DECODER_LAYERS, BATCH_SIZE, NUM_EPOCHS, MAX_POS_LEN, LEARNING_RATE, TOP_P, TEMPERATURE, INTERFACE, VOCAB
-# from heavy2light import Heavy2Light
-# from seq_data import SeqData
-# from model import Seq2SeqTransformer, Seq2SeqTransformerRPE, Seq2SeqTransformerRoPE, Seq2SeqTransformerAttention, rename_state_dict_keys
-# from training import train_model
-# from h2l_tokenizers import ABtokenizer, ABtokenizerInterface, ABtokenizerType
-from .utils import passing_anarcii_filtering, passing_humatch, AbLang2_confidence, MAP_TYPE_SEED, MAP_GENE_FAM_SEED, MAP_GENE_SEED
+from .utils import passing_anarcii_filtering, passing_humatch, AbLang2_confidence, diversity_AbLang2, MAP_TYPE_SEED, MAP_GENE_FAM_SEED, MAP_GENE_SEED
 
 class LICHEN():
     """Initialise LICHEN"""
@@ -55,7 +38,8 @@ class LICHEN():
             Number of light sequences requested per heavy sequence.
         filtering : list
             List of filtering steps to perform, if empty no filtering is applied.
-            Options are: 'redundancy', 'ANARCII', 'Humatch', 'AbLang2'. And combinations thereof.
+            Options are: 'redundancy', 'diversity', 'ANARCII', 'Humatch', 'AbLang2',
+            and combinations thereof (except 'diversity' and 'AbLang2', which defaults to 'diversity')
             When filtering requested 10 times more sequences will be generated than
             requested to apply filtering on. 
         """
@@ -77,7 +61,7 @@ class LICHEN():
             if not isinstance(filtering, list):
                 raise SyntaxError("'filtering' needs to be provided as a list")
             for tool in filtering: 
-                if not tool in ['redundancy', 'ANARCII', 'Humatch', 'AbLang2']:
+                if not tool in ['redundancy', 'diversity', 'ANARCII', 'Humatch', 'AbLang2']:
                     raise SyntaxError(f"Given filtering {tool} doesn't exist.")
         
         if any(germline_seed) and custom_seed:
@@ -130,11 +114,13 @@ class LICHEN():
         # remove duplicates
         if filtering and 'redundancy' in filtering:
             light_sequences = list(set(light_sequences))
-        if filtering and 'AbLang2' in filtering:
-            return  AbLang2_confidence(light_sequences, n) 
-        elif len(light_sequences) < n:
+        if len(light_sequences) < n:
             print(f'Only {len(light_sequences)} sequences could be generated that pass all requested filtering')
             return light_sequences
+        elif filtering and 'diversity' in filtering:
+            return diversity_AbLang2(light_sequences, n) 
+        elif filtering and 'AbLang2' in filtering:
+            return AbLang2_confidence(light_sequences, n) 
         else:
             return random.sample(light_sequences, k=n)
                 

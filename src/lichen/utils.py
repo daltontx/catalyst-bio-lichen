@@ -318,4 +318,35 @@ def AbLang2_confidence(list_lights, n):
 
     return df['light_sequence'].to_list()
 
+def diversity_AbLang2(list_lights, n):
+    """Calculates the confidence (log likelihood) of the light sequences
+    according to AbLang2 and select most diverse light sequences based
+    on these scores.
+    """
+
+    try:
+        import ablang2
+    except ImportError as e:
+        raise ImportError(
+            """
+            AbLang2 is required to run this function.
+            Please install it using the instructions in the README.
+            """
+        ) from e
+
+    list_sequences = [['', x] for x in list_lights]
+    ablang = ablang2.pretrained()
+    
+    # Calculate the confidence
+    results = ablang(list_sequences, mode='confidence')
+    confidence = np.exp(-results)
+    
+    # Add confidence to the dataframe to pair light sequence and score
+    df = pd.DataFrame({'light_sequence': list_lights, 'AbLang2_confidence': confidence})
+
+    # Sort and select evenly spaced values
+    all_scores = df['AbLang2_confidence'].to_list()
+    all_scores.sort()
+    idx = np.round(np.linspace(0, len(all_scores) - 1, n)).astype(int)
+    return [df[df['AbLang2_confidence']==all_scores[i]].iloc[0]['light_sequence'] for i in idx]
 
