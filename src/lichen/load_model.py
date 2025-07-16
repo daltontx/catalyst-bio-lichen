@@ -32,7 +32,7 @@ def load_weights(model, device, model_path):
     """Load weights of model """
     model.load_state_dict(torch.load(model_path, map_location=device, weights_only=True))
 
-def configure_cpus(ncpu: int) -> int:
+def configure_cpus(ncpu: int):
     """Configure CPU allocation based on availability and user input."""
     available_cpus = get_available_cpus()
     if ncpu == -1:
@@ -60,3 +60,16 @@ def get_available_cpus():
             return int(os.environ["LSB_DJOB_NUMPROC"])
         # Final fallback: detect all cores
         return os.cpu_count()
+    
+def configure_device(cpu: bool, ncpu: int):
+    """
+    Configure computation device (CPU or GPU).
+    It will default to CPU if no GPU is available or if cpu=True.
+    """
+    if cpu or not torch.cuda.is_available():
+        device = torch.device("cpu")
+    else:
+        device = torch.device("cuda")
+
+    print(f"Using device {str(device).upper()} with {ncpu} CPUs")
+    return device
