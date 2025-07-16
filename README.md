@@ -53,7 +53,7 @@ The **model weights** can be downloaded from ..
 LICHEN generates light sequences for a given heavy sequence. Additional information regarding perferred light sequence type (e.g. kappa), V-gene family (e.g. IGKV1), and V-gene (e.g. IGKV1-39) usage can be provided to the model as well as light sequence seed of any length. 
 Moreover, preffered usage of CDR sequences can be provided in any combination (e.g. only CDRL3) according to both IMGT and Kabat numbering scheme definitions. 
 
-Generated light sequence can be automatically filtered on duplicates, sequences which can be numbered by <a href="https://doi.org/10.1101/2025.04.16.648720">ANARCII</a>, sequences which are human according to <a href="https://doi.org/10.1080/19420862.2024.2434121">Humatch</a>, and the most likely sequences according to <a href="https://doi.org/10.1093/bioinformatics/btae618">AbLang2</a>. 
+Generated light sequence can be automatically filtered on duplicates ("redundancy"), sequences which can be numbered by <a href="https://doi.org/10.1101/2025.04.16.648720">ANARCII</a>, sequences which are human according to <a href="https://doi.org/10.1080/19420862.2024.2434121">Humatch</a>, and the most likely sequences according to <a href="https://doi.org/10.1093/bioinformatics/btae618">AbLang2</a>. Moreover, the most diverse ("diversity") sequences can be selected. The later requires AbLang2 installation. 
 
 LICHEN also allows for two heavy sequences as input, to generate a common light sequence.
 
