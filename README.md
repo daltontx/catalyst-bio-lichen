@@ -42,7 +42,7 @@ python setup.py install
 
 ```
 
-**ANARCII**, **Humatch** (and **ANARCI**), and **AbLang** are optional packages only required when you want to perform automatic filtering.
+**Humatch** - and therefore **ANARCI** - are optional packages only required when you want to perform automatic filtering on humanness.
 
 Note that with the above environment LICHEN only works on a **CPU**.
 
