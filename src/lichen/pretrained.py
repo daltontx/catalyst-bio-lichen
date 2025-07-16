@@ -3,19 +3,20 @@ import torch
 import random
 import pandas as pd
 import math
+import time
 
-from .load_model import load_model
+from .load_model import load_model, configure_cpus
 from .utils import passing_anarcii_filtering, passing_humatch, AbLang2_confidence, diversity_AbLang2, MAP_TYPE_SEED, MAP_GENE_FAM_SEED, MAP_GENE_SEED
 
 class LICHEN():
     """Initialise LICHEN"""
 
-    def __init__(self, path_to_model, device='cpu'):
+    def __init__(self, path_to_model, device='cpu', ncpu=-1):
         super().__init__()
         
         self.used_device = torch.device(device)
+        self.ncpu = configure_cpus(ncpu)
         self.LICHEN = load_model(path_to_model, self.used_device)
-
 
     def light_generation(self, input:str|list, germline_seed:list=[None], custom_seed:str=None, cdrs:list=[None, None, None], numbering_scheme:str='IMGT',n:int=1, filtering:list=None):
         """Generate light sequences for the input heavy sequence
@@ -67,7 +68,6 @@ class LICHEN():
         if any(germline_seed) and custom_seed:
             print('Cannot provide germline seeds and custom seed, custom seed will be used')
         
-
         # Check number of repeats required
         if filtering or any(cdrs):
             repeats = n*10
