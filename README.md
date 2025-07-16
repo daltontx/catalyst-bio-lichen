@@ -67,10 +67,11 @@ Log likelihood and perplexity scores for a given heavy and light sequence can al
 For all use cases, first the model need to be loaded in python.
 ```
 from lichen import LICHEN
-lichen_model = LICHEN('path/to/model/model_weights.pt')
+lichen_model = LICHEN('path/to/model/model_weights.pt') # change to locally stored model path
 ```
-
-Change the model path to you local stored model path.
+Using a one or multiple CPUs can be requested with the parameters:  
+**cpu**: Use a CPU if True, and GPU (if available) if False.  
+**ncpu**: Number of CPUs to be used, default to all available CPUs.
 
 ### Generating light sequences for a single heavy sequence
 Light sequences can be generated directly for a single heavy sequence using the **light_generation** function. This function takes the following parameters as input:  
