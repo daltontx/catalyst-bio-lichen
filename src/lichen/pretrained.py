@@ -69,8 +69,6 @@ class LICHEN():
         if any(germline_seed) and custom_seed:
             print('Cannot provide germline seeds and custom seed, custom seed will be used')
         
-        t0 = time.time()
-
         # Check number of repeats required
         if filtering or any(cdrs):
             repeats = n*10
@@ -113,8 +111,6 @@ class LICHEN():
                     continue
 
             light_sequences.append(gen_light)
-
-        print(f'Duration: {time.time()-t0}')
     
         # remove duplicates
         if filtering and 'redundancy' in filtering:
