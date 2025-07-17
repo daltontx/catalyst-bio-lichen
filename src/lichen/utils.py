@@ -274,6 +274,7 @@ def passing_humatch(generated_light_sequence):
 
     try:
         import os
+        import importlib.resources as pkg_resources
         from Humatch.align import get_padded_seq
         from Humatch.model import load_cnn
         from Humatch.classify import predict_from_list_of_seq_strs, get_class_and_score_of_max_predictions_only
@@ -286,8 +287,8 @@ def passing_humatch(generated_light_sequence):
         ) from e
 
     light_seq_pad = get_padded_seq(generated_light_sequence)
-    current_dir = os.getcwd()
-    weights_dir = os.path.join(current_dir, "Humatch", "Humatch", "trained_models")
+    base_path = str(pkg_resources.files("lichen")).split('/src')[0]
+    weights_dir = os.path.join(base_path, "Humatch", "Humatch", "trained_models")
     cnn_light = load_cnn(os.path.join(weights_dir, "light.weights.h5"), "light")
     predictions_light = predict_from_list_of_seq_strs([light_seq_pad], cnn_light)
     output_humatch = get_class_and_score_of_max_predictions_only(predictions_light, "light")
