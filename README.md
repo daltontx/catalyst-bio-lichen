@@ -80,9 +80,9 @@ Light sequences can be generated directly for a single heavy sequence using the 
 **germline_seed**: Type, V-gene family, or V-genes to use provided in a list, multiple are allowed (e.g. ['IGKV1', 'IGKV2'] or ['IGKV1', 'K']).
 When multiple provided a random chosen selected seed will be used.  
 **custom_seed**: Custom seed to use. Provided as string.  
-**cdrs**: Containing the CDRL1, CDRL2, and CDRL3 for additional information available. Provided as list of length three (e.g. if only CDRL3 known [None, None, 'QQYNRTS']  
+**cdrs**: Containing the CDRL1, CDRL2, and CDRL3 for additional information available. Provided as list of length three (e.g. if only CDRL3 known [None, None, 'QQYNRTS']).    
 **numbering_scheme**: Numbering scheme CDR definition used when CDRs provided. Either 'IMGT' or 'Kabat'.   
-**n** : Number of light sequences requested per heavy sequence.  
+**n**: Number of light sequences requested per heavy sequence.  
 **filtering**: Filtering methods to apply. Provided in a list (e.g. ['ANARCII'])  
 
 ```
@@ -97,7 +97,7 @@ Optional additional information can be passed in the columns **"germline_seed"**
 The function takse the remaining parameters as input, i.e.:  
 **input**: the pandas dataframe.  
 **numbering_scheme**: Numbering scheme CDR definition used when CDRs provided. Either 'IMGT' or 'Kabat'.  
-**n** : Number of light sequences requested per heavy sequence.  
+**n**: Number of light sequences requested per heavy sequence.  
 
 ```
 import pandas as pd
@@ -120,7 +120,7 @@ This function takes a pandas dataframe as input with the heavy sequence in the *
 
 ```
 import pandas as pd
-df_input = pd.DataFrame({'heavy': df_input = pd.DataFrame({'heavy': ['EVQLLESGGEVKKPGASVKVSCRASGYTFRNYGLTWVRQAPGQGLEWMGWISAYNGNTNYAQKFQGRVTLTTDTSTSTAYMELRSLRSDDTAVYFCARDVPGHGAAFMDVWGTGTTVTVSS'], 'light': ['DIQMTQSPSTLSASIGDRVTITCRASEDVRKSLAWYQHRPGKAPRVLISAVSRLKDEVPSRFRGTRSEAEYTLSITSLQPDDSGTYFCQHYHRNSTTFGGGTRVDMK']})
+df_input = pd.DataFrame({'heavy': ['EVQLLESGGEVKKPGASVKVSCRASGYTFRNYGLTWVRQAPGQGLEWMGWISAYNGNTNYAQKFQGRVTLTTDTSTSTAYMELRSLRSDDTAVYFCARDVPGHGAAFMDVWGTGTTVTVSS'],'light': ['DIQMTQSPSTLSASIGDRVTITCRASEDVRKSLAWYQHRPGKAPRVLISAVSRLKDEVPSRFRGTRSEAEYTLSITSLQPDDSGTYFCQHYHRNSTTFGGGTRVDMK']})
 result = lichen_model.light_log_likelihood(df_input)
 ```
 
