@@ -1,8 +1,10 @@
 """Load trained model"""
 import torch
 import os
+import json
 import psutil
 import warnings
+import importlib.resources as pkg_resources
 
 from .parameters import EMB_SIZE, NHEAD, FFN_HID_DIM, NUM_ENCODER_LAYERS, NUM_DECODER_LAYERS, MAX_POS_LEN, TOP_P, TEMPERATURE
 from .model import Seq2SeqTransformer
@@ -12,8 +14,7 @@ from .inference import Heavy2Light
 
 def load_model(path_to_model, device):
     # get the vocab size based on the tokenizer
-    current_dir = os.getcwd()
-    VOCAB = os.path.join(current_dir, "src", "lichen", "vocab.json")
+    VOCAB = pkg_resources.files("lichen").joinpath('vocab.json')
     SRC_VOCAB_SIZE = len(ABtokenizer(VOCAB).vocab_to_aa)
     TGT_VOCAB_SIZE = len(ABtokenizer(VOCAB).vocab_to_aa)
 
