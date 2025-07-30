@@ -19,7 +19,14 @@ class LICHEN():
         self.used_device = configure_device(cpu, self.ncpu)
         self.LICHEN = load_model(path_to_model, self.used_device)
 
-    def light_generation(self, input:str|list, germline_seed:list=[None], custom_seed:str=None, cdrs:list=[None, None, None], numbering_scheme:str='IMGT',n:int=1, filtering:list=None):
+    def light_generation(self, 
+                         input:str|list,
+                         germline_seed:list=[None],
+                         custom_seed:str=None,
+                         cdrs:list=[None, None, None],
+                         numbering_scheme:str='IMGT',n:int=1,
+                         filtering:list=None,
+                         verbose:bool=False):
         """Generate light sequences for the input heavy sequence
         
         Parameters
@@ -44,6 +51,8 @@ class LICHEN():
             and combinations thereof (except 'diversity' and 'AbLang2', which defaults to 'diversity')
             When filtering requested 10 times more sequences will be generated than
             requested to apply filtering on. 
+        verbose : bool
+            Enable verbose output.
         """
         # Check input formats
         if isinstance(input, str):
@@ -68,6 +77,9 @@ class LICHEN():
         
         if any(germline_seed) and custom_seed:
             print('Cannot provide germline seeds and custom seed, custom seed will be used')
+
+        if verbose:
+            print('Loading parameters...')
         
         # Check number of repeats required
         if filtering or any(cdrs):
@@ -93,6 +105,8 @@ class LICHEN():
         
 
         # Generate the light sequences
+        if verbose:
+            print(f'Generating {repeats} sequences...')
         light_sequences = []
         for rep in range(repeats):
             # Sample a seed from possible seeds (if given)
@@ -104,29 +118,46 @@ class LICHEN():
             gen_light = self.LICHEN.generate_light(input, light_seed, light_cdr, numbering_scheme)
 
             if filtering and 'ANARCII' in filtering:
+                if verbose:
+                    print('Check numbering/cdrs of generated sequence...')
                 if not passing_anarcii_filtering(gen_light, light_cdr, numbering_scheme, ncpu=self.ncpu):
                     continue 
             if filtering and 'Humatch' in filtering:
+                if verbose:
+                    print('Check humanness of generated sequence...')
                 if not passing_humatch(gen_light):
                     continue
 
             light_sequences.append(gen_light)
-    
+            
+            if verbose and (rep+1)%5==0:
+                print(f'Generated {rep+1}/{repeats} sequences...')
+
         # remove duplicates
         if filtering and 'redundancy' in filtering:
+            if verbose:
+                print('Removing redundant sequences...')
             light_sequences = list(set(light_sequences))
         if len(light_sequences) < n:
             print(f'Only {len(light_sequences)} sequences could be generated that pass all requested filtering')
             return light_sequences
         elif filtering and 'diversity' in filtering:
+            if verbose:
+                print('Selecting the most diverse sequences...')
             return diversity_AbLang2(light_sequences, n, ncpu=self.ncpu, device=self.used_device) 
         elif filtering and 'AbLang2' in filtering:
+            if verbose:
+                print('Selecting the most AbLang2 likely sequences...')
             return AbLang2_confidence(light_sequences, n, ncpu=self.ncpu, device=self.used_device) 
         else:
             return random.sample(light_sequences, k=n)
                 
 
-    def light_generation_bulk(self, input, numbering_scheme:str='IMGT', n:int=1):
+    def light_generation_bulk(self, 
+                              input, 
+                              numbering_scheme:str='IMGT', 
+                              n:int=1,
+                              verbose:bool=False):
         """
         Generates light sequences for an input DataFrame
 
@@ -136,6 +167,8 @@ class LICHEN():
             DataFrame containing multiple sequences and potentially additional information.
         n : int
             Number of light sequences requested per heavy sequence.
+        verbose : bool
+            Enable verbose output.
         """
         if not 'heavy' in input.columns:
             raise SyntaxError("The input dataframe should contain a column named 'heavy' with the heavy sequence")
@@ -150,7 +183,8 @@ class LICHEN():
         
         result = []
         for _, row in input.iterrows():
-            lights = self.light_generation(row['heavy'], row['germline_seed'], row['custom_seed'], row['cdrs'], numbering_scheme, n, row['filtering'])
+            print(f'Generate light sequences for heavy: {row["heavy"]}')
+            lights = self.light_generation(row['heavy'], row['germline_seed'], row['custom_seed'], row['cdrs'], numbering_scheme, n, row['filtering'], verbose=verbose)
             result.append(pd.DataFrame({'heavy': [row['heavy']]*n,
                                         'generated_light': lights}))
         return pd.concat(result)
