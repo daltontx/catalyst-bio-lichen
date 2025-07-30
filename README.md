@@ -79,11 +79,11 @@ Light sequences can be generated directly for a single heavy sequence using the 
 **input**: the heavy sequence  
 **germline_seed**: Type, V-gene family, or V-genes to use provided in a list, multiple are allowed (e.g. ['IGKV1', 'IGKV2'] or ['IGKV1', 'K']).
 When multiple provided a random chosen selected seed will be used.  
-**custom_seed**: Custom seed to use. Provided as string.  
+**custom_seed**: Custom seed to use. Provided as string (e.g 'DIQMT').  
 **cdrs**: Containing the CDRL1, CDRL2, and CDRL3 for additional information available. Provided as list of length three (e.g. if only CDRL3 known [None, None, 'QQYNRTS']).    
 **numbering_scheme**: Numbering scheme CDR definition used when CDRs provided. Either 'IMGT' or 'Kabat'.   
 **n**: Number of light sequences requested per heavy sequence.  
-**filtering**: Filtering methods to apply. Provided in a list (e.g. ['ANARCII'])  
+**filtering**: Filtering methods to apply. Available options are 'redundancy', 'diversity', 'ANARCII', 'Humatch', and 'AbLang2'. Provided in a list (e.g. ['ANARCII'])  
 
 ```
 lichen_model.light_generation('EVQLLESGGEVKKPGASVKVSCRASGYTFRNYGLTWVRQAPGQGLEWMGWISAYNGNTNYAQKFQGRVTLTTDTSTSTAYMELRSLRSDDTAVYFCARDVPGHGAAFMDVWGTGTTVTVSS', germline_seed=['IGKV1'], n=2)
