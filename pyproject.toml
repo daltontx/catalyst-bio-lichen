@@ -8,4 +8,6 @@ version = "1.0.1"
 dependencies = [
   "numpy",
   "torch",
+  "pandas",
+  "biopython"
 ]
