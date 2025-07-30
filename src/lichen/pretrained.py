@@ -117,7 +117,7 @@ class LICHEN():
 
             gen_light = self.LICHEN.generate_light(input, light_seed, light_cdr, numbering_scheme)
 
-            if filtering and 'ANARCII' in filtering:
+            if filtering and 'ANARCII' in filtering or light_cdr:
                 if verbose:
                     print('Check numbering/cdrs of generated sequence...')
                 if not passing_anarcii_filtering(gen_light, light_cdr, numbering_scheme, ncpu=self.ncpu):
