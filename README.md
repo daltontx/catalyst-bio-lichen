@@ -83,7 +83,8 @@ When multiple provided a random chosen selected seed will be used.
 **cdrs**: Containing the CDRL1, CDRL2, and CDRL3 for additional information available. Provided as list of length three (e.g. if only CDRL3 known [None, None, 'QQYNRTS']).    
 **numbering_scheme**: Numbering scheme CDR definition used when CDRs provided. Either 'IMGT' or 'Kabat'.   
 **n**: Number of light sequences requested per heavy sequence.  
-**filtering**: Filtering methods to apply. Available options are 'redundancy', 'diversity', 'ANARCII', 'Humatch', and 'AbLang2'. Provided in a list (e.g. ['ANARCII'])  
+**filtering**: Filtering methods to apply. Available options are 'redundancy', 'diversity', 'ANARCII', 'Humatch', and 'AbLang2'. Provided in a list (e.g. ['ANARCII']).    
+**verbose**: Enable verbose output.  
 
 ```
 lichen_model.light_generation('EVQLLESGGEVKKPGASVKVSCRASGYTFRNYGLTWVRQAPGQGLEWMGWISAYNGNTNYAQKFQGRVTLTTDTSTSTAYMELRSLRSDDTAVYFCARDVPGHGAAFMDVWGTGTTVTVSS', germline_seed=['IGKV1'], n=2)
@@ -97,7 +98,8 @@ Optional additional information can be passed in the columns **"germline_seed"**
 The function takse the remaining parameters as input, i.e.:  
 **input**: the pandas dataframe.  
 **numbering_scheme**: Numbering scheme CDR definition used when CDRs provided. Either 'IMGT' or 'Kabat'.  
-**n**: Number of light sequences requested per heavy sequence.  
+**n**: Number of light sequences requested per heavy sequence.   
+**verbose**: Enable verbose output.  
 
 ```
 import pandas as pd
