@@ -256,16 +256,16 @@ def extract_cdrs(sequence_numbering, light_cdr_scheme):
         cdr2_pos = list(range(56, 65+1))
         cdr3_pos = list(range(105, 117+1))
         
-        cdr1_gen, cdr2_gen, cdr3_gen = '', '', ''
-        for number in sequence_numbering:
-            if number[0][0] in cdr1_pos:
-                cdr1_gen += number[1]
-            elif number[0][0] in cdr2_pos:
-                cdr2_gen += number[1]
-            elif number[0][0] in cdr3_pos:
-                cdr3_gen += number[1]
-        # Remove the '-' indicating no amino acid
-        return cdr1_gen.replace('-', ''), cdr2_gen.replace('-', ''), cdr3_gen.replace('-', '')
+    cdr1_gen, cdr2_gen, cdr3_gen = '', '', ''
+    for number in sequence_numbering:
+        if number[0][0] in cdr1_pos:
+            cdr1_gen += number[1]
+        elif number[0][0] in cdr2_pos:
+            cdr2_gen += number[1]
+        elif number[0][0] in cdr3_pos:
+            cdr3_gen += number[1]
+    # Remove the '-' indicating no amino acid
+    return cdr1_gen.replace('-', ''), cdr2_gen.replace('-', ''), cdr3_gen.replace('-', '')
     
 def passing_humatch(generated_light_sequence):
     """Run Humatch to determine if the generated sequence is human.
