@@ -32,12 +32,29 @@ pip install .
 ```
 
 **Humatch** - and therefore **ANARCI** - are optional packages only required when you want to perform automatic filtering on humanness.
-If you would like to use Humatch it is recommended to install the cpuonly version of pytorch. Note that this means when filtering by Humatch LICHEN can only be run on a CPU.
+If you would like to use Humatch it is recommended to install python 3.9 and the cpuonly version of pytorch. Note that this means when filtering by Humatch LICHEN can only be run on a CPU.
 
 ```
-## Optional packages
+## Install with optional packages (Humatch + ANARCI)
+# Clone the repo
+git clone https://github.com:HenrietteCapel/LICHEN.git
+cd LICHEN/
+
+# Install LICHEN with python3.9
+conda create -n LICHEN_env python=3.9
+
+# Install the other packages
+conda install anaconda::pip
+conda install -c conda-forge biopython -y
+
 # Install cpuonly version of pytorch
 conda install pytorch cpuonly -c pytorch
+
+# ANARCII
+conda install conda-forge::anarcii
+
+# AbLang2
+pip install ablang2
 
 # Humatch
 cd LICHEN #Humatch and ANARCI need to be installed within the LICHEN folder
