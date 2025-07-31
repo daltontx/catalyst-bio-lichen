@@ -316,6 +316,13 @@ class Heavy2Light:
             except KeyError as e:
                 print(f"Heavy sequence contains an invalid residue: {e}")
                 return None
+        if light_cdr:
+            for cdr in [x for x in light_cdr if x is not None]:
+                    try:
+                        encode_sanity_check = [self.tokenizer.vocab_to_token[resn] for resn in cdr]
+                    except KeyError as e:
+                        print(f"CDR sequence {cdr} contains an invalid residue: {e}")
+                        return None
 
         # encode the heavy sequence
         src = []
@@ -351,6 +358,18 @@ class Heavy2Light:
     def likelihood_light(self, heavy_seq, light_seq):
         # Make sure model in evaluation modus
         self.model.eval()
+
+        # Check if all amino acids provided known
+        try:
+            encode_sanity_check = [self.tokenizer.vocab_to_token[resn] for resn in heavy_seq]
+        except KeyError as e:
+            print(f"Heavy sequence contains an invalid residue: {e}")
+            return None
+        try:
+            encode_sanity_check = [self.tokenizer.vocab_to_token[resn] for resn in light_seq]
+        except KeyError as e:
+            print(f"Light sequence contains an invalid residue: {e}")
+            return None
 
         # encode the heavy sequence
         src = self.tokenizer.encode(heavy_seq).view(-1, 1)

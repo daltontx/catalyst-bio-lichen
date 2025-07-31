@@ -239,7 +239,11 @@ class LICHEN():
         
         log_likelihoods = []
         for _, row in input.iterrows():
-            log_likelihoods.append(round(self.LICHEN.likelihood_light(row['heavy'], row['light']),2))
+            log_likelihood = self.LICHEN.likelihood_light(row['heavy'], row['light'])
+            if log_likelihood:
+                log_likelihood = round(log_likelihood, 2)
+            log_likelihoods.append(log_likelihood)
+        
         input['log_likelihood'] = log_likelihoods
         
         return input
@@ -262,8 +266,11 @@ class LICHEN():
         perplexities = []
         for _, row in input.iterrows():
             log_likelihood = self.LICHEN.likelihood_light(row['heavy'], row['light'])
-            avg_log_prob = log_likelihood / len(row['light'])
-            perplexities.append(round(math.exp(-avg_log_prob),2))
+            if log_likelihood:
+                avg_log_prob = log_likelihood / len(row['light'])
+                perplexities.append(round(math.exp(-avg_log_prob),2))
+            else:
+                perplexities.append(log_likelihood)
 
         input['perplexity'] = perplexities
         
