@@ -3,7 +3,7 @@ import torch
 import random
 import pandas as pd
 import math
-import time
+from typing import Union, List, Optional
 
 from .load_model import load_model, configure_cpus, configure_device
 from .utils import passing_anarcii_filtering, passing_humatch, AbLang2_confidence, diversity_AbLang2, MAP_TYPE_SEED, MAP_GENE_FAM_SEED, MAP_GENE_SEED
@@ -20,13 +20,14 @@ class LICHEN():
         self.LICHEN = load_model(path_to_model, self.used_device)
 
     def light_generation(self, 
-                         input:str|list,
-                         germline_seed:list=[None],
-                         custom_seed:str=None,
-                         cdrs:list=[None, None, None],
-                         numbering_scheme:str='IMGT',n:int=1,
-                         filtering:list=None,
-                         verbose:bool=False):
+                         input: Union[str, List[str]],
+                         germline_seed: Optional[List[str]] = None,
+                         custom_seed: Optional[str] = None,
+                         cdrs:Optional[List[Optional[str]]] = None,
+                         numbering_scheme: str = 'IMGT',
+                         n: int = 1,
+                         filtering: Optional[List[str]] = None,
+                         verbose: bool = False):
         """Generate light sequences for the input heavy sequence
         
         Parameters
@@ -60,8 +61,12 @@ class LICHEN():
         for heavy_seq in input:
             if len(heavy_seq)>0 and len(heavy_seq)<80:
                 raise SyntaxError("Incomplete heavy sequence provided")
+        if germline_seed is None:
+            germline_seed = [None]
         if not isinstance(germline_seed, list):
             raise SyntaxError("'germline_seed' needs to be provided as a list")
+        if cdrs is None:
+            cdrs = [None, None, None]
         if not isinstance(cdrs, list):
             raise SyntaxError("'cdrs' needs to be provided as a list")
         if not len(cdrs) == 3:
@@ -109,6 +114,10 @@ class LICHEN():
             print(f'Generating {repeats} sequences...')
         light_sequences = []
         for rep in range(repeats):
+            # Update the user
+            if verbose and rep!=0 and (rep)%5==0:
+                print(f'Generated {rep}/{repeats} sequences...')
+
             # Sample a seed from possible seeds (if given)
             if light_seeds:
                 light_seed = random.sample(light_seeds, k=1)[0]
@@ -116,6 +125,10 @@ class LICHEN():
                 light_seed = None
 
             gen_light = self.LICHEN.generate_light(input, light_seed, light_cdr, numbering_scheme)
+
+            if not gen_light:
+                light_sequences.append(gen_light)
+                break
 
             if filtering and 'ANARCII' in filtering or light_cdr:
                 if verbose:
@@ -129,9 +142,6 @@ class LICHEN():
                     continue
 
             light_sequences.append(gen_light)
-            
-            if verbose and (rep+1)%5==0:
-                print(f'Generated {rep+1}/{repeats} sequences...')
 
         # remove duplicates
         if filtering and 'redundancy' in filtering:
@@ -139,7 +149,8 @@ class LICHEN():
                 print('Removing redundant sequences...')
             light_sequences = list(set(light_sequences))
         if len(light_sequences) < n:
-            print(f'Only {len(light_sequences)} sequences could be generated that pass all requested filtering')
+            print(f'Only {len(light_sequences)} sequences could be generated that pass all requested filtering.\n'\
+                   'Try rerunning LICHEN or request more sequences.')
             return light_sequences
         elif filtering and 'diversity' in filtering:
             if verbose:
@@ -154,10 +165,10 @@ class LICHEN():
                 
 
     def light_generation_bulk(self, 
-                              input, 
-                              numbering_scheme:str='IMGT', 
-                              n:int=1,
-                              verbose:bool=False):
+                              input: pd.DataFrame, 
+                              numbering_scheme: str = 'IMGT', 
+                              n: int = 1,
+                              verbose: bool = False):
         """
         Generates light sequences for an input DataFrame
 
@@ -212,7 +223,8 @@ class LICHEN():
                 raise SyntaxError(f"Light sequence V-gene family {germline} doesn't exist.")
             
 
-    def light_log_likelihood(self, input):
+    def light_log_likelihood(self, 
+                             input: pd.DataFrame):
         """Extract model conditional log likelihood for pairing
         
         Parameters
@@ -233,7 +245,8 @@ class LICHEN():
         return input
     
 
-    def light_perplexity(self, input):
+    def light_perplexity(self,
+                         input: pd.DataFrame):
         """Extract model perplexity for pairing
         
         Parameters
@@ -255,4 +268,3 @@ class LICHEN():
         input['perplexity'] = perplexities
         
         return input
-
