@@ -309,6 +309,14 @@ class Heavy2Light:
         # Make sure model in evaluation modus
         self.model.eval()
 
+        # Check if all amino acids provided known
+        for sequence in heavy_seq:
+            try:
+                encode_sanity_check = [self.tokenizer.vocab_to_token[resn] for resn in sequence]
+            except KeyError as e:
+                print(f"Heavy sequence contains an invalid residue: {e}")
+                return None
+
         # encode the heavy sequence
         src = []
         src_mask = []

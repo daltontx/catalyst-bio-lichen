@@ -24,8 +24,8 @@ class ABtokenizer():
         self.vocab_to_aa = {v: k for k, v in self.vocab_to_token.items()}
  
     def encode(self, sequence, device='cpu'):
-       encoded = [self.vocab_to_token["<"]]+[self.vocab_to_token[resn] for resn in sequence]+[self.vocab_to_token[">"]]
-       return torch.tensor(encoded, dtype=torch.long, device=device)
+        encoded = [self.vocab_to_token["<"]]+[self.vocab_to_token[resn] for resn in sequence]+[self.vocab_to_token[">"]]
+        return torch.tensor(encoded, dtype=torch.long, device=device)
 
     def decode(self, seqtokens):
         if torch.is_tensor(seqtokens): seqtokens = seqtokens.cpu().numpy()
