@@ -5,6 +5,12 @@ build-backend = "hatchling.build"
 [project]
 name = "lichen"
 version = "1.0.1"
+description = "Light-chain Immunoglobulin sequence generation Conditioned on the Heavy chain and Experimental Needs."
+readme = "README.md"
+license-files = ["LICENCE"]
+authors = [
+  { name = "Henriette L. Capel", email = "opig@stats.ox.ac.uk" },
+]
 dependencies = [
   "numpy",
   "torch",
