@@ -206,7 +206,7 @@ def passing_anarcii_filtering(generated_light_sequence, light_cdr, light_cdr_sch
     # Run ANARCII while silencing its output
     text_trap = io.StringIO()
     sys.stdout = text_trap
-    model = Anarcii(seq_type="antibody", batch_size=1, cpu=True, ncpu=ncpu, mode="accuracy", verbose=False)
+    model = Anarcii(seq_type="antibody", batch_size=1, cpu=True, ncpu=ncpu, mode="speed", verbose=False)
     sys.stdout = sys.__stdout__
 
     sequence = [('generated_light', generated_light_sequence)]
