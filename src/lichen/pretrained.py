@@ -133,17 +133,20 @@ class LICHEN():
                 break
 
             if filtering and 'ANARCII' in filtering or light_cdr:
-                if verbose:
-                    print('Check numbering/cdrs of generated sequence...')
                 if not self.FILTERING.passing_anarcii_filtering(gen_light, light_cdr, numbering_scheme):
                     continue 
             if filtering and 'Humatch' in filtering:
-                if verbose:
-                    print('Check humanness of generated sequence...')
                 if not self.FILTERING.passing_humatch(gen_light):
                     continue
 
             light_sequences.append(gen_light)
+
+        # Verbose printing filtering performed
+        if verbose:
+            if filtering and 'ANARCII' in filtering or light_cdr:
+                 print('Sequences passed through ANARCII for checking numbering/cdrs...')
+            if filtering and 'Humatch' in filtering:
+                print('Sequences passed through Humatch for checking humanness...')
 
         # remove duplicates
         if filtering and 'redundancy' in filtering:
