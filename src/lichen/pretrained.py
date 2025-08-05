@@ -6,7 +6,8 @@ import math
 from typing import Union, List, Optional
 
 from .load_model import load_model, configure_cpus, configure_device
-from .utils import passing_anarcii_filtering, passing_humatch, AbLang2_confidence, diversity_AbLang2, MAP_TYPE_SEED, MAP_GENE_FAM_SEED, MAP_GENE_SEED
+from .utils import FILTERING, MAP_TYPE_SEED, MAP_GENE_FAM_SEED, MAP_GENE_SEED
+# passing_anarcii_filtering, passing_humatch, AbLang2_confidence, diversity_AbLang2
 
 class LICHEN():
     """Initialise LICHEN"""
@@ -18,6 +19,7 @@ class LICHEN():
         self.ncpu = configure_cpus(ncpu)
         self.used_device = configure_device(cpu, self.ncpu)
         self.LICHEN = load_model(path_to_model, self.used_device)
+        self.FILTERING = FILTERING(self.used_device, self.ncpu)
 
     def light_generation(self, 
                          input: Union[str, List[str]],
@@ -98,7 +100,7 @@ class LICHEN():
         elif any(germline_seed):
             light_seeds = []
             for germline in germline_seed:
-                light_seeds.extend(self.get_possible_seeds(germline))
+                light_seeds.extend(self._get_possible_seeds(germline))
         else:
             light_seeds=None
 
@@ -133,12 +135,12 @@ class LICHEN():
             if filtering and 'ANARCII' in filtering or light_cdr:
                 if verbose:
                     print('Check numbering/cdrs of generated sequence...')
-                if not passing_anarcii_filtering(gen_light, light_cdr, numbering_scheme, ncpu=self.ncpu):
+                if not self.FILTERING.passing_anarcii_filtering(gen_light, light_cdr, numbering_scheme):
                     continue 
             if filtering and 'Humatch' in filtering:
                 if verbose:
                     print('Check humanness of generated sequence...')
-                if not passing_humatch(gen_light):
+                if not self.FILTERING.passing_humatch(gen_light):
                     continue
 
             light_sequences.append(gen_light)
@@ -155,11 +157,11 @@ class LICHEN():
         elif filtering and 'diversity' in filtering:
             if verbose:
                 print('Selecting the most diverse sequences...')
-            return diversity_AbLang2(light_sequences, n, ncpu=self.ncpu, device=self.used_device) 
+            return self.FILTERING.diversity_AbLang2(light_sequences, n) 
         elif filtering and 'AbLang2' in filtering:
             if verbose:
                 print('Selecting the most AbLang2 likely sequences...')
-            return AbLang2_confidence(light_sequences, n, ncpu=self.ncpu, device=self.used_device) 
+            return self.FILTERING.AbLang2_confidence(light_sequences, n) 
         else:
             return random.sample(light_sequences, k=n)
                 
@@ -200,7 +202,7 @@ class LICHEN():
                                         'generated_light': lights}))
         return pd.concat(result)
 
-    def get_possible_seeds(self, germline):
+    def _get_possible_seeds(self, germline):
         """Use lookup tables to find all possible seeds
         for the requested germline.
         """

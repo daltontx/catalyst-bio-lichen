@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+
 MAP_FR1_FR3 = {'NI': ['SL'],
                'AI': ['SL']*7+['TL']*6,
                'QT': ['NK']*1+['TR']*2,
@@ -174,195 +175,181 @@ MAP_GENE_SEED = {'IGLV1-36': ['QSVLTQPPSV'], 'IGLV1-40': ['QSVLTQPPSV', 'QSVVTQP
                      'IGKV3/OR2-268': ['EIVMTQSPAT', 'EIVMTQSPAT'], 'IGKV3D-11': ['EIVLTQSPAT', 'EIVLTQSPAT', 'EIVLTQSPAT'], 'IGKV3D-15': ['EIVMTQSPAT', 'EIVMMQSPAT', 'EIVMTQSPAT'], 
                      'IGKV3D-20': ['EIVLTQSPAT', 'EIVLTQSPAT'], 'IGKV3D-7': ['EIVMTQSPAT'], 'IGKV4-1': ['DIVMTQSPDS', 'DIVMTQSPDS', 'DIVMTQSPDS'], 'IGKV5-2': ['ETTLTQSPAF', 'ETTLTQSPAF'], 
                      'IGKV6-21': ['EIVLTQSPDF', 'EIVLTQSPDF'], 'IGKV6D-21': ['EIVLTQSPDF', 'EIVLTQSPDF'], 'IGKV6D-41': ['DVVMTQSPAF'], 'IGKV7-3': ['DIVLTQSPAS']}
-    
-def passing_anarcii_filtering(generated_light_sequence, light_cdr, light_cdr_scheme, ncpu=1):
-    """Run ANARCII and determine if the sequence can be numbered and is recognised
-    as a light chain. If CDRs are provided correctness of grafting into the 
-    generated sequence is checked.
-   
-    Parameter
-    ---------
-    generated_light_sequence : str
-        The generated light seqeunce
-    light_cdr :  None or list
-        Containing the CDRs.
-    light_cdr_scheme : 'IMGT' or 'Kabat'
-        The numbering scheme definition of the CDRs.
-    ncpu :
-        Number of CPUs to use.
-    """
 
-    try:
-        from anarcii import Anarcii
-        import io
-        import sys
-    except ImportError as e:
-        raise ImportError(
-            """
-            ANARCII is required to run this function.
-            Please install it using the instructions in the README.
-            """
-        ) from e
-    # Run ANARCII while silencing its output
-    text_trap = io.StringIO()
-    sys.stdout = text_trap
-    model = Anarcii(seq_type="antibody", batch_size=1, cpu=True, ncpu=ncpu, mode="speed", verbose=False)
-    sys.stdout = sys.__stdout__
+class FILTERING():
+    """Initialise FILTERING"""
 
-    sequence = [('generated_light', generated_light_sequence)]
-    results =  model.number(sequence)
-    legacy_format = model.to_legacy()
+    def __init__(self, device, ncpu):
+        super().__init__()
+        # Install anarcii
+        try:
+            from anarcii import Anarcii
+            import io
+            import sys
+        except ImportError as e:
+            raise ImportError(
+                """
+                ANARCII is required to run this function.
+                Please install it using the instructions in the README.
+                """
+            ) from e
+        # Run ANARCII while silencing its output
+        text_trap = io.StringIO()
+        sys.stdout = text_trap
+        self.anarcii_model = Anarcii(seq_type="antibody", batch_size=1, cpu=True, ncpu=ncpu, mode="speed", verbose=False)
+        sys.stdout = sys.__stdout__
 
-    numbering, alignment_details, _ = legacy_format
-    
-    if not numbering[0]:
-       return False
-    elif alignment_details[0][0]['chain_type'] not in ['K', 'L']: # Could be 'H' for heavy and 'F' for failing
-       return False
-    else:
-        if light_cdr:
-            # Check generated CDRs are provided CDRS
-            cdr1_gen, cdr2_gen, cdr3_gen = extract_cdrs(numbering[0][0][0], light_cdr_scheme) # this is a list of the format: [((1, ' '), 'D'), ((2, ' '), 'I') ..]
-            if light_cdr[0] and light_cdr[0] != cdr1_gen:
-                return False
-            if light_cdr[1] and light_cdr[1] != cdr2_gen:
-                return False
-            if light_cdr[2] and light_cdr[2] != cdr3_gen:
-                return False
-            else:
-                return True
-        else:
-            # Passed the ANARCI test and CDRs not given
-            return True
-
-def extract_cdrs(sequence_numbering, light_cdr_scheme):
-    """Given a number sequence, determine the CDRs according to CDR definition
-    of provided numbering scheme.
-    
-    Parameters
-    ----------
-    sequence_numbering : list
-        ANARCII numbered sequence.
-    light_cdr_scheme : 'IMGT' or 'Kabat'
-        The numbering scheme definition of the CDRs.
-    """
-    if light_cdr_scheme == 'Kabat':
-        cdr1_pos = list(range(24, 40+1))
-        cdr2_pos = list(range(56, 69+1))
-        cdr3_pos = list(range(105, 117+1))
-    else:
-        # IMGT defintion
-        cdr1_pos = list(range(27, 38+1))
-        cdr2_pos = list(range(56, 65+1))
-        cdr3_pos = list(range(105, 117+1))
+        # Install AbLang2
+        try:
+            import ablang2
+            import warnings
+        except ImportError as e:
+            raise ImportError(
+                """
+                AbLang2 is required to run this function.
+                Please install it using the instructions in the README.
+                """
+            ) from e
+        # Ignore UserWarning    
+        warnings.filterwarnings("ignore", category=FutureWarning)
+        self.ablang2_model = ablang2.pretrained(ncpu=ncpu, device=device)
         
-    cdr1_gen, cdr2_gen, cdr3_gen = '', '', ''
-    for number in sequence_numbering:
-        if number[0][0] in cdr1_pos:
-            cdr1_gen += number[1]
-        elif number[0][0] in cdr2_pos:
-            cdr2_gen += number[1]
-        elif number[0][0] in cdr3_pos:
-            cdr3_gen += number[1]
-    # Remove the '-' indicating no amino acid
-    return cdr1_gen.replace('-', ''), cdr2_gen.replace('-', ''), cdr3_gen.replace('-', '')
+        
+    def passing_anarcii_filtering(self, generated_light_sequence, light_cdr, light_cdr_scheme):
+        """Run ANARCII and determine if the sequence can be numbered and is recognised
+        as a light chain. If CDRs are provided correctness of grafting into the 
+        generated sequence is checked.
     
-def passing_humatch(generated_light_sequence):
-    """Run Humatch to determine if the generated sequence is human.
-    Human is defined if the Humatch score for a light V-gene
-    is higher than 0.95."""
+        Parameter
+        ---------
+        generated_light_sequence : str
+            The generated light seqeunce
+        light_cdr :  None or list
+            Containing the CDRs.
+        light_cdr_scheme : 'IMGT' or 'Kabat'
+            The numbering scheme definition of the CDRs.
+        """
+        sequence = [('generated_light', generated_light_sequence)]
+        results =  self.anarcii_model.number(sequence)
+        legacy_format = self.anarcii_model.to_legacy()
 
-    try:
-        import os
-        import importlib.resources as pkg_resources
-        from Humatch.align import get_padded_seq
-        from Humatch.model import load_cnn
-        from Humatch.classify import predict_from_list_of_seq_strs, get_class_and_score_of_max_predictions_only
-    except ImportError as e:
-        raise ImportError(
-            """
-            Humatch is required to run this function.
-            Please install it using the instructions in the README.
-            """
-        ) from e
+        numbering, alignment_details, _ = legacy_format
+        
+        if not numbering[0]:
+            return False
+        elif alignment_details[0][0]['chain_type'] not in ['K', 'L']: # Could be 'H' for heavy and 'F' for failing
+            return False
+        else:
+            if light_cdr:
+                # Check generated CDRs are provided CDRS
+                cdr1_gen, cdr2_gen, cdr3_gen = self._extract_cdrs(numbering[0][0][0], light_cdr_scheme) # this is a list of the format: [((1, ' '), 'D'), ((2, ' '), 'I') ..]
+                if light_cdr[0] and light_cdr[0] != cdr1_gen:
+                    return False
+                if light_cdr[1] and light_cdr[1] != cdr2_gen:
+                    return False
+                if light_cdr[2] and light_cdr[2] != cdr3_gen:
+                    return False
+                else:
+                    return True
+            else:
+                # Passed the ANARCI test and CDRs not given
+                return True
 
-    light_seq_pad = get_padded_seq(generated_light_sequence)
-    base_path = str(pkg_resources.files("lichen")).split('/src')[0]
-    weights_dir = os.path.join(base_path, "Humatch", "Humatch", "trained_models")
-    cnn_light = load_cnn(os.path.join(weights_dir, "light.weights.h5"), "light")
-    predictions_light = predict_from_list_of_seq_strs([light_seq_pad], cnn_light)
-    output_humatch = get_class_and_score_of_max_predictions_only(predictions_light, "light")
-    threshold = 0.95
-    if output_humatch[0][1]>threshold and output_humatch[0][0][0] in ['k', 'l']:
-        return True
-    else:
-        return False
+    def _extract_cdrs(self, sequence_numbering, light_cdr_scheme):
+        """Given a number sequence, determine the CDRs according to CDR definition
+        of provided numbering scheme.
+        
+        Parameters
+        ----------
+        sequence_numbering : list
+            ANARCII numbered sequence.
+        light_cdr_scheme : 'IMGT' or 'Kabat'
+            The numbering scheme definition of the CDRs.
+        """
+        if light_cdr_scheme == 'Kabat':
+            cdr1_pos = list(range(24, 40+1))
+            cdr2_pos = list(range(56, 69+1))
+            cdr3_pos = list(range(105, 117+1))
+        else:
+            # IMGT defintion
+            cdr1_pos = list(range(27, 38+1))
+            cdr2_pos = list(range(56, 65+1))
+            cdr3_pos = list(range(105, 117+1))
+            
+        cdr1_gen, cdr2_gen, cdr3_gen = '', '', ''
+        for number in sequence_numbering:
+            if number[0][0] in cdr1_pos:
+                cdr1_gen += number[1]
+            elif number[0][0] in cdr2_pos:
+                cdr2_gen += number[1]
+            elif number[0][0] in cdr3_pos:
+                cdr3_gen += number[1]
+        # Remove the '-' indicating no amino acid
+        return cdr1_gen.replace('-', ''), cdr2_gen.replace('-', ''), cdr3_gen.replace('-', '')
     
-def AbLang2_confidence(list_lights, n, ncpu, device):
-    """Calculates the confidence (log likelihood) of the light sequences
-    according to AbLang2.
-    """
+    def passing_humatch(self, generated_light_sequence):
+        """Run Humatch to determine if the generated sequence is human.
+        Human is defined if the Humatch score for a light V-gene
+        is higher than 0.95."""
 
-    try:
-        import ablang2
-        import warnings
-    except ImportError as e:
-        raise ImportError(
-            """
-            AbLang2 is required to run this function.
-            Please install it using the instructions in the README.
-            """
-        ) from e
+        try:
+            import os
+            import importlib.resources as pkg_resources
+            from Humatch.align import get_padded_seq
+            from Humatch.model import load_cnn
+            from Humatch.classify import predict_from_list_of_seq_strs, get_class_and_score_of_max_predictions_only
+        except ImportError as e:
+            raise ImportError(
+                """
+                Humatch is required to run this function.
+                Please install it using the instructions in the README.
+                """
+            ) from e
+
+        light_seq_pad = get_padded_seq(generated_light_sequence)
+        base_path = str(pkg_resources.files("lichen")).split('/src')[0]
+        weights_dir = os.path.join(base_path, "Humatch", "Humatch", "trained_models")
+        cnn_light = load_cnn(os.path.join(weights_dir, "light.weights.h5"), "light")
+        predictions_light = predict_from_list_of_seq_strs([light_seq_pad], cnn_light)
+        output_humatch = get_class_and_score_of_max_predictions_only(predictions_light, "light")
+        threshold = 0.95
+        if output_humatch[0][1]>threshold and output_humatch[0][0][0] in ['k', 'l']:
+            return True
+        else:
+            return False
     
-    # Ignore UserWarning    
-    warnings.filterwarnings("ignore", category=FutureWarning)
+    def AbLang2_confidence(self, list_lights, n):
+        """Calculates the confidence (log likelihood) of the light sequences
+        according to AbLang2.
+        """
+        list_sequences = [['', x] for x in list_lights]
+        
+        # Calculate the confidence
+        results = self.ablang2_model(list_sequences, mode='confidence')
+        confidence = np.exp(-results)
+        
+        # Add confidence to the dataframe
+        df = pd.DataFrame({'light_sequence': list_lights, 'AbLang2_confidence': confidence})
+        df = df.sort_values(by='AbLang2_confidence', ascending=False)[:n]
 
-    list_sequences = [['', x] for x in list_lights]
-    ablang = ablang2.pretrained(ncpu=ncpu, device=device)
-    
-    # Calculate the confidence
-    results = ablang(list_sequences, mode='confidence')
-    confidence = np.exp(-results)
-    
-    # Add confidence to the dataframe
-    df = pd.DataFrame({'light_sequence': list_lights, 'AbLang2_confidence': confidence})
-    df = df.sort_values(by='AbLang2_confidence', ascending=False)[:n]
+        return df['light_sequence'].to_list()
 
-    return df['light_sequence'].to_list()
+    def diversity_AbLang2(self, list_lights, n):
+        """Calculates the confidence (log likelihood) of the light sequences
+        according to AbLang2 and select most diverse light sequences based
+        on these scores.
+        """
+        list_sequences = [['', x] for x in list_lights]
+        
+        # Calculate the confidence
+        results = self.ablang2_model(list_sequences, mode='confidence')
+        confidence = np.exp(-results)
+        
+        # Add confidence to the dataframe to pair light sequence and score
+        df = pd.DataFrame({'light_sequence': list_lights, 'AbLang2_confidence': confidence})
 
-def diversity_AbLang2(list_lights, n, ncpu, device):
-    """Calculates the confidence (log likelihood) of the light sequences
-    according to AbLang2 and select most diverse light sequences based
-    on these scores.
-    """
-
-    try:
-        import ablang2
-        import warnings
-    except ImportError as e:
-        raise ImportError(
-            """
-            AbLang2 is required to run this function.
-            Please install it using the instructions in the README.
-            """
-        ) from e
-    
-    # Ignore UserWarning    
-    warnings.filterwarnings("ignore", category=FutureWarning)
-
-    list_sequences = [['', x] for x in list_lights]
-    ablang = ablang2.pretrained(ncpu=ncpu, device=device)
-    
-    # Calculate the confidence
-    results = ablang(list_sequences, mode='confidence')
-    confidence = np.exp(-results)
-    
-    # Add confidence to the dataframe to pair light sequence and score
-    df = pd.DataFrame({'light_sequence': list_lights, 'AbLang2_confidence': confidence})
-
-    # Sort and select evenly spaced values
-    all_scores = df['AbLang2_confidence'].to_list()
-    all_scores.sort()
-    idx = np.round(np.linspace(0, len(all_scores) - 1, n)).astype(int)
-    return [df[df['AbLang2_confidence']==all_scores[i]].iloc[0]['light_sequence'] for i in idx]
-
+        # Sort and select evenly spaced values
+        all_scores = df['AbLang2_confidence'].to_list()
+        all_scores.sort()
+        idx = np.round(np.linspace(0, len(all_scores) - 1, n)).astype(int)
+        return [df[df['AbLang2_confidence']==all_scores[i]].iloc[0]['light_sequence'] for i in idx]
