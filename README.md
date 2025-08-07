@@ -68,7 +68,7 @@ cd ANARCI
 python setup.py install
 ```
 
-The **model weights** can be downloaded from ..
+The **model weights** can be downloaded from <a href="https://doi.org/10.5281/zenodo.15917096">Zenodo</a>
 
 <!--- Example usage within python --->
 ## Example usage within python
