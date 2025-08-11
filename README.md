@@ -153,13 +153,18 @@ result = lichen_model.light_perplexity(df_input)
 ```
 
 ## Citation
+This work is described in our [paper](https://doi.org/10.1101/2025.08.06.668938):
+
+**LICHEN: Light-chain Immunoglobulin sequence generation Conditioned on the Heavy chain and Experimental Needs**
 
 ```
 @article{Capel2025,
-  title = {},
-  author = {},
+  title = {LICHEN: Light-chain Immunoglobulin sequence generation Conditioned on the Heavy chain and Experimental Needs},
+  author = {Capel, Henriette L and Ellmen, Isaac and Murray, Chris J and Mignone, Giulia and Black, Megan and Clarke, Brendan and Breen, Conor and Tierney, Sean and Dougan, Patrick and Buick, Richard J and Greenshields-Watson, Alexander and Deane, Charlotte M},
   journal = {bioRxiv},
-  year = {2025},
-  doi = {}
+  year={2025},
+  doi = {https://doi.org/10.1101/2025.08.06.668938}
 }
 ```
+## Web tool
+The live Web tool is available at https://opig.stats.ox.ac.uk/webapps/lichen/
