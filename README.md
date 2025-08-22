@@ -2,6 +2,8 @@
 
 **Light-chain Immunoglobulin sequence generation Conditioned on the Heavy chain and Experimental Needs**
 
+This is the DaltonTX fork of the LICHEN tool. 
+
 <!--- INSTALL --->
 ## Install
 
